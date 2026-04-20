@@ -11,7 +11,7 @@
         "ID": 2,
         "TITLE": "Pay bills",
         "DESCRIPTION": "Pay electricity and internet bills online.",
-        "STATUS": "Pending",
+        "STATUS": "Completed",
         "DUE_DATE": "/Date(1718150400000)/",
         "CREATED_DATE": "/Date(1718092800000)/"
     },
@@ -19,7 +19,7 @@
         "ID": 3,
         "TITLE": "Setup database",
         "DESCRIPTION": "Setup and implement the sqlite database.",
-        "STATUS": "Pending",
+        "STATUS": "In Progress",
         "DUE_DATE": "/Date(1761609600000)/",
         "CREATED_DATE": "/Date(1761523200000)/"
     }
