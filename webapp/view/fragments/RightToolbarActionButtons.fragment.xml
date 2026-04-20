@@ -1,0 +1,20 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <OverflowToolbar>
+        <ToolbarSpacer />
+
+        <Button
+            icon="sap-icon://add"
+            text="Add Task"
+            type="Emphasized"
+        />
+
+        <Button
+            icon="sap-icon://delete"
+            text="Delete Selected"
+            type="Transparent"
+        />
+    </OverflowToolbar>
+</core:FragmentDefinition>

@@ -8,15 +8,19 @@
         id="mainview--container"
         title="{i18n>title}"
     >
-        <headerContent>
-            <!-- Headerbar -->
-        </headerContent>
         <content>
-            <!-- List of Todo Tasks -->
+            <!-- Table of Todo Tasks -->
             <Table
                 id="todoTable"
                 items="{/Todo}"
             >
+                <headerToolbar>
+                    <!-- Headerbar -->
+                    <core:Fragment
+                        fragmentName="meinetodolistenapp.view.fragments.HeaderToolbar"
+                        type="XML"
+                    />
+                </headerToolbar>
                 <columns>
                     <Column
                         id="iconCol"
@@ -81,18 +85,10 @@
                                 state="{path: 'STATUS', formatter: '.getStatusState'}"
                             />
 
-                            <HBox>
-                                <Button
-                                    icon="sap-icon://edit"
-                                    type="Transparent"
-                                    press=".onEditPress"
-                                />
-                                <Button
-                                    icon="sap-icon://delete"
-                                    type="Transparent"
-                                    press=".onDeletePress"
-                                />
-                            </HBox>
+                            <core:Fragment
+                                fragmentName="meinetodolistenapp.view.fragments.ActionButtons"
+                                type="XML"
+                            />
                         </cells>
                     </ColumnListItem>
                 </items>

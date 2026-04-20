@@ -1,0 +1,18 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <OverflowToolbar>
+        <!-- left toolbar items -->
+        <core:Fragment
+            fragmentName="meinetodolistenapp.view.fragments.LeftToolbarItems"
+            type="XML"
+        />
+        <ToolbarSpacer />
+        <!-- right toolbar items -->
+        <core:Fragment
+            fragmentName="meinetodolistenapp.view.fragments.RightToolbarActionButtons"
+            type="XML"
+        />
+    </OverflowToolbar>
+</core:FragmentDefinition>

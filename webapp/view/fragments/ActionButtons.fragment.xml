@@ -1,0 +1,17 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <HBox>
+        <Button
+            icon="sap-icon://edit"
+            type="Transparent"
+        />
+        <Button
+            icon="sap-icon://delete"
+            type="Transparent"
+        />
+    </HBox>
+</core:FragmentDefinition>  
+            
+
