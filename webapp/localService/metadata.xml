@@ -1,0 +1,37 @@
+<edmx:Edmx Version="1.0"
+ xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+ xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+ xmlns:sap="http://www.sap.com/Protocols/SAPData">
+
+  <edmx:DataServices m:DataServiceVersion="2.0">
+
+    <Schema Namespace="Z_TODO_SRV"
+      xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+
+      <EntityType Name="Todo">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+
+        <Property Name="ID" Type="Edm.Int32" Nullable="false"/>        
+        <Property Name="TITLE" Type="Edm.String" MaxLength="255"/>
+        <Property Name="DESCRIPTION" Type="Edm.String" MaxLength="255"/>
+        <Property Name="STATUS" Type="Edm.String" Nullable="false" MaxLength="20"/>
+        <Property Name="DUE_DATE" Type="Edm.DateTime" sap:display-format="Date"/>
+        <Property Name="CREATED_DATE" Type="Edm.DateTime" Precision="7" sap:display-format="Date"/>
+
+
+
+      </EntityType>
+
+      <EntityContainer Name="Z_TODO_SRV_Entities"
+        m:IsDefaultEntityContainer="true">
+
+        <EntitySet Name="Todo"
+          EntityType="Z_TODO_SRV.Todo"/>
+
+      </EntityContainer>
+
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

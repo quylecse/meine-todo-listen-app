@@ -1,0 +1,26 @@
+[
+    {
+        "ID": 1,
+        "TITLE": "Get groceries",
+        "DESCRIPTION": "Buy milk and eggs",
+        "STATUS": "Pending",
+        "DUE_DATE": "/Date(1717977600000)/",
+        "CREATED_DATE": "/Date(1717920000000)/"
+    },
+    {
+        "ID": 2,
+        "TITLE": "Pay bills",
+        "DESCRIPTION": "Pay electricity and internet bills online.",
+        "STATUS": "Pending",
+        "DUE_DATE": "/Date(1718150400000)/",
+        "CREATED_DATE": "/Date(1718092800000)/"
+    },
+    {
+        "ID": 3,
+        "TITLE": "Setup database",
+        "DESCRIPTION": "Setup and implement the sqlite database.",
+        "STATUS": "Pending",
+        "DUE_DATE": "/Date(1761609600000)/",
+        "CREATED_DATE": "/Date(1761523200000)/"
+    }
+]
