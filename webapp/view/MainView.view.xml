@@ -17,7 +17,7 @@
                 <headerToolbar>
                     <!-- Headerbar -->
                     <core:Fragment
-                        fragmentName="meinetodolistenapp.view.fragments.HeaderToolbar"
+                        fragmentName="meinetodolistenapp.view.fragments.toolbar.HeaderToolbar"
                         type="XML"
                     />
                 </headerToolbar>
@@ -26,43 +26,22 @@
                         id="iconCol"
                         width="12rem"
                     >
-                        <!-- cl1 -->
                         <Text text="{i18n>column.icon}" />
                     </Column>
-                    <Column id="column2">
-                        <!-- cl2 -->
-                        <Text
-                            id="titleCol"
-                            text="{i18n>column.title}"
-                        />
+                    <Column id="titleCol">
+                        <Text text="{i18n>column.title}" />
                     </Column>
-                    <Column id="column3">
-                        <!-- cl3 -->
-                        <Text
-                            id="descriptionCol"
-                            text="{i18n>column.description}"
-                        />
+                    <Column id="descriptionCol">
+                        <Text text="{i18n>column.description}" />
                     </Column>
-                    <Column id="column4">
-                        <!-- cl5 -->
-                        <Text
-                            id="dueDateCol"
-                            text="{i18n>column.dueDate}"
-                        />
+                    <Column id="dueDateCol">
+                        <Text text="{i18n>column.dueDate}" />
                     </Column>
-                    <Column id="column5">
-                        <!-- cl4 -->
-                        <Text
-                            id="statusCol"
-                            text="{i18n>column.status}"
-                        />
+                    <Column id="statusCol">
+                        <Text text="{i18n>column.status}" />
                     </Column>
-                    <Column id="column6">
-                        <!-- cl6 -->
-                        <Text
-                            id="actionCol"
-                            text="{i18n>column.action}"
-                        />
+                    <Column id="actionCol">
+                        <Text text="{i18n>column.action}" />
                     </Column>
                 </columns>
                 <items>
@@ -86,7 +65,7 @@
                             />
 
                             <core:Fragment
-                                fragmentName="meinetodolistenapp.view.fragments.ActionButtons"
+                                fragmentName="meinetodolistenapp.view.fragments.table.ActionButtons"
                                 type="XML"
                             />
                         </cells>

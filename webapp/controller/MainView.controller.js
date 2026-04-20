@@ -61,6 +61,35 @@ sap.ui.define(
           oBinding.filter([]);
         }
       },
+      formatStatusText: function (sTextKey) {
+        if (!sTextKey) {
+          return "";
+        }
+        var oResourceBundle = this.getView()
+          .getModel("i18n")
+          .getResourceBundle();
+        return oResourceBundle.getText(sTextKey);
+      },
+      onStatusChange: function (oEvent) {
+        const sSelectedStatus = oEvent.getParameter("selectedItem").getKey();
+        console.log("Selected Status:", sSelectedStatus);
+        this.onStatusSearch(sSelectedStatus); //
+      },
+      onStatusSearch: function (sStatus) {
+        const oTable = this.byId("todoTable");
+        const oBinding = oTable.getBinding("items");
+
+        if (!oBinding) {
+          return;
+        }
+
+        if (sStatus && sStatus !== "" && sStatus !== "All") {
+          const oFilter = new Filter("STATUS", FilterOperator.EQ, sStatus);
+          oBinding.filter(oFilter);
+        } else {
+          oBinding.filter([]);
+        }
+      },
     });
   },
 );

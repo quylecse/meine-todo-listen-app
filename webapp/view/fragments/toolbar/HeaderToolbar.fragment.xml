@@ -1,0 +1,48 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <OverflowToolbar
+        id="headerToolbar"
+        height="3.5rem"
+        class="alignBottomToolbar"
+    >
+        <!-- Search -->
+        <SearchField
+            id="searchField"
+            placeholder="{i18n>searchPlaceholder}"
+            width="15rem"
+            liveChange=".onSearch"
+            search=".onSearch"
+        />
+        <!-- status drop down menu -->
+        <Select
+            forceSelection="false"
+            items="{status>/StatusList}"
+            selectedKey="{status>/selectedStatus}"
+            change=".onStatusChange"
+        >
+            <core:Item
+                key="{status>key}"
+                text="{
+                path: 'status>textKey',
+                formatter: '.formatStatusText'
+            }"
+            />
+        </Select>
+
+        <ToolbarSpacer />
+        <!-- add task button -->
+        <Button
+            icon="sap-icon://add-activity"
+            text="{i18n>addTaskBtnText}"
+            type="Emphasized"
+        />
+        <!-- delete selected button -->
+        <Button
+            icon="sap-icon://delete"
+            text="{i18n>deleteSelectedBtnText}"
+            type="Reject"
+        />
+    </OverflowToolbar>
+</core:FragmentDefinition>

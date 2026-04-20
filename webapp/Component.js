@@ -1,26 +1,31 @@
-sap.ui.define([
+sap.ui.define(
+  [
     "sap/ui/core/UIComponent",
-    "meinetodolistenapp/model/models"
-], (UIComponent, models) => {
+    "meinetodolistenapp/model/models",
+    "meinetodolistenapp/model/statusModel",
+  ],
+  (UIComponent, models, statusModel) => {
     "use strict";
 
     return UIComponent.extend("meinetodolistenapp.Component", {
-        metadata: {
-            manifest: "json",
-            interfaces: [
-                "sap.ui.core.IAsyncContentCreation"
-            ]
-        },
+      metadata: {
+        manifest: "json",
+        interfaces: ["sap.ui.core.IAsyncContentCreation"],
+      },
 
-        init() {
-            // call the base component's init function
-            UIComponent.prototype.init.apply(this, arguments);
+      init() {
+        // call the base component's init function
+        UIComponent.prototype.init.apply(this, arguments);
 
-            // set the device model
-            this.setModel(models.createDeviceModel(), "device");
+        // set the device model
+        this.setModel(models.createDeviceModel(), "device");
 
-            // enable routing
-            this.getRouter().initialize();
-        }
+        const oStatusModel = statusModel.createStatusModel();
+        this.setModel(oStatusModel, "status");
+
+        // enable routing
+        this.getRouter().initialize();
+      },
     });
-});
+  },
+);

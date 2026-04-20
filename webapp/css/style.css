@@ -1,1 +1,4 @@
-/* Enter your custom styles here */
+.alignBottomToolbar {
+    padding-top: 0.9rem !important;
+    padding-bottom: 0.1rem !important;
+}
