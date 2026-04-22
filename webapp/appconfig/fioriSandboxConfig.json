@@ -1,0 +1,14 @@
+{
+    "bootstrapPlugins": {},
+    "renderers": {
+        "fiori2": {
+            "componentData": {
+                "config": {
+                    "search": "hidden"
+                }
+            }
+        }
+    },
+    "applications": {},
+    "flexibilityServices": []
+}

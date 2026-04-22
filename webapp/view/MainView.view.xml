@@ -1,6 +1,6 @@
 <mvc:View
     xmlns:core="sap.ui.core"
-    controllerName="meinetodolistenapp.controller.MainView"
+    controllerName="com.example.meinetodolistenapp.controller.MainView"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
 >

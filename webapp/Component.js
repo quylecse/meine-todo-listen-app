@@ -1,13 +1,9 @@
 sap.ui.define(
-  [
-    "sap/ui/core/UIComponent",
-    "meinetodolistenapp/model/models",
-    "meinetodolistenapp/model/statusModel",
-  ],
+  ["sap/ui/core/UIComponent", "./model/models", "./model/statusModel"],
   (UIComponent, models, statusModel) => {
     "use strict";
 
-    return UIComponent.extend("meinetodolistenapp.Component", {
+    return UIComponent.extend("com.example.meinetodolistenapp.Component", {
       metadata: {
         manifest: "json",
         interfaces: ["sap.ui.core.IAsyncContentCreation"],
