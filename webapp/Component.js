@@ -1,6 +1,11 @@
 sap.ui.define(
-  ["sap/ui/core/UIComponent", "./model/models", "./model/statusModel"],
-  (UIComponent, models, statusModel) => {
+  [
+    "sap/ui/core/UIComponent",
+    "./model/models",
+    "./model/statusModel",
+    "./model/sortModel",
+  ],
+  (UIComponent, models, statusModel, sortModel) => {
     "use strict";
 
     return UIComponent.extend("com.example.meinetodolistenapp.Component", {
@@ -19,6 +24,8 @@ sap.ui.define(
         const oStatusModel = statusModel.createStatusModel();
         this.setModel(oStatusModel, "status");
 
+        const oTestModel = sortModel.createSortOption();
+        this.setModel(oTestModel, "sortOptions");
         // enable routing
         this.getRouter().initialize();
       },

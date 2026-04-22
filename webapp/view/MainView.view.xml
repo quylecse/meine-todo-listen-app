@@ -17,7 +17,7 @@
                 <headerToolbar>
                     <!-- Headerbar -->
                     <core:Fragment
-                        fragmentName="meinetodolistenapp.view.fragments.toolbar.HeaderToolbar"
+                        fragmentName="com.example.meinetodolistenapp.view.fragments.toolbar.HeaderToolbar"
                         type="XML"
                     />
                 </headerToolbar>
@@ -65,7 +65,7 @@
                             />
 
                             <core:Fragment
-                                fragmentName="meinetodolistenapp.view.fragments.table.ActionButtons"
+                                fragmentName="com.example.meinetodolistenapp.view.fragments.table.ActionButtons"
                                 type="XML"
                             />
                         </cells>

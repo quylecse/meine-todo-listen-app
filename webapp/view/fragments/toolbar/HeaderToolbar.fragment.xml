@@ -30,6 +30,20 @@
             }"
             />
         </Select>
+        <Select
+            id="sortSelect"
+            forceSelection="true"
+            items="{sortOptions>/sortOptions}"
+            selectedKey="{sortOptions>/selectedSortOption}"
+            change=".onSortChange"
+        >
+            <core:Item
+                key="{sortOptions>key}"
+                text="{
+                    path: 'sortOptions>text', 
+                    formatter: '.formatSortOptionText'}"
+            />
+        </Select>
 
         <ToolbarSpacer />
         <!-- add task button -->

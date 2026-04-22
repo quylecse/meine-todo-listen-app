@@ -3,8 +3,9 @@ sap.ui.define(
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
+    "sap/ui/model/Sorter",
   ],
-  function (Controller, Filter, FilterOperator) {
+  function (Controller, Filter, FilterOperator, Sorter) {
     "use strict";
 
     return Controller.extend(
@@ -12,34 +13,13 @@ sap.ui.define(
       {
         onInit: function () {},
 
-        formatDate: function (sDate) {
-          //check null
-          if (!sDate || sDate === undefined || sDate === null) return "";
-
-          //parsing sDate to Date object
-          let date;
-          const match = /\d+/.exec(sDate); //regex  (cut the number part from the string)" "1717977600000"
-          if (!match) return "";
-
-          date = new Date(parseInt(match[0], 10)); // parsing the matched string to an interger then a Date object  // Mon Jun 10 2024
-          return new Intl.DateTimeFormat(navigator.language, {
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-          }).format(date); //format the date to the user's locale
-        },
-        getStatusState: function (sStatus) {
-          switch (sStatus) {
-            case "Completed":
-              return "Success";
-            case "In Progress":
-              return "Information";
-            case "Pending":
-              return "Warning";
-            default:
-              return "Warning";
-          }
-        },
+        /**
+         * ===================================================
+         * ACTIONS CONTROLLER
+         * - Todo suchen
+         * - Status ausfiltern
+         * ===================================================
+         */
         onSearch: function (oEvent) {
           const sInput =
             oEvent.getParameter("query") || oEvent.getParameter("newValue");
@@ -67,19 +47,9 @@ sap.ui.define(
             oBinding.filter([]);
           }
         },
-        formatStatusText: function (sTextKey) {
-          if (!sTextKey) {
-            return "";
-          }
-          var oResourceBundle = this.getView()
-            .getModel("i18n")
-            .getResourceBundle();
-          return oResourceBundle.getText(sTextKey);
-        },
         onStatusChange: function (oEvent) {
-          const sSelectedStatus = oEvent.getParameter("selectedItem").getKey();
-          console.log("Selected Status:", sSelectedStatus);
-          this.onStatusSearch(sSelectedStatus); //
+          const selectedStatus = oEvent.getSource().getSelectedKey();
+          this.onStatusSearch(selectedStatus); //
         },
         onStatusSearch: function (sStatus) {
           const oTable = this.byId("todoTable");
@@ -94,6 +64,75 @@ sap.ui.define(
             oBinding.filter(oFilter);
           } else {
             oBinding.filter([]);
+          }
+        },
+        onSortChange: function (oEvent) {
+          //sort key ausholen
+          const sortKey = oEvent.getSource().getSelectedKey();
+          //console.log(sortKey);
+          // console.log("ausgewählte Kriterium: " + sortKey);
+          if (!sortKey) return;
+
+          let isAscending = sortKey.includes("Asc") ? true : false;
+          let sortBy = "";
+          if (sortKey.includes("date")) {
+            sortBy = "DUE_DATE";
+          } else if (sortKey.includes("title")) {
+            sortBy = "TITLE";
+          }
+
+          const oSorter = new Sorter(sortBy, !isAscending);
+          //console.log("sort by: " + sortBy);
+          let oTable = this.byId("todoTable");
+          oTable.getBinding("items").sort(oSorter);
+        },
+
+        /**
+         * ===================================================
+         * HILFSFUNKTIONEN
+         * - Formatter für Texte
+         * - Status-Definitionen
+         * ===================================================
+         */
+        formatSortOptionText: function (sortTextKey) {
+          if (!sortTextKey) {
+            return "";
+          }
+          let oResourceBundle = this.getView()
+            .getModel("i18n")
+            .getResourceBundle();
+          return oResourceBundle.getText(sortTextKey);
+        },
+        formatStatusText: function (statusTextKey) {
+          if (!statusTextKey) {
+            return "";
+          }
+          let oResourceBundle = this.getView()
+            .getModel("i18n")
+            .getResourceBundle();
+          return oResourceBundle.getText(statusTextKey);
+        },
+        formatDate: function (sDate) {
+          //check null
+          if (!sDate || sDate === undefined || sDate === null) return "";
+
+          const date = sDate instanceof Date ? sDate : new Date(sDate);
+          return new Intl.DateTimeFormat(navigator.language, {
+            day: "2-digit",
+            month: "2-digit",
+            year: "2-digit",
+          }).format(date);
+        },
+        getStatusState: function (sStatus) {
+          switch (sStatus) {
+            case "Completed":
+              return "Success";
+            case "In Progress":
+              return "Information";
+            case "Pending":
+              return "Warning";
+            default:
+              return "Warning";
           }
         },
       },
