@@ -1,7 +1,7 @@
 {
   "_version": "1.83.0",
   "sap.app": {
-    "id": "meinetodolistenapp",
+    "id": "com.example.meinetodolistenapp",
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
@@ -64,7 +64,7 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "meinetodolistenapp.i18n.i18n"
+          "bundleName": "com.example.meinetodolistenapp.i18n.i18n"
         }
       }
     },
@@ -83,9 +83,9 @@
         "transition": "slide",
         "type": "View",
         "viewType": "XML",
-        "path": "meinetodolistenapp.view",
+        "path": "com.example.meinetodolistenapp.view",
         "async": true,
-        "viewPath": "meinetodolistenapp.view"
+        "viewPath": "com.example.meinetodolistenapp.view"
       },
       "routes": [
         {
@@ -104,7 +104,7 @@
       }
     },
     "rootView": {
-      "viewName": "meinetodolistenapp.view.App",
+      "viewName": "com.example.meinetodolistenapp.view.App",
       "type": "XML",
       "id": "App",
       "async": true

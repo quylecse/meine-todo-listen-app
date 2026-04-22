@@ -1,10 +1,10 @@
-sap.ui.define([
-  "sap/ui/core/mvc/Controller"
-], (BaseController) => {
+sap.ui.define(["sap/ui/core/mvc/Controller"], (BaseController) => {
   "use strict";
 
-  return BaseController.extend("meinetodolistenapp.controller.App", {
-      onInit() {
-      }
-  });
+  return BaseController.extend(
+    "com.example.meinetodolistenapp.controller.App",
+    {
+      onInit() {},
+    },
+  );
 });
