@@ -5,14 +5,34 @@ sap.ui.define(
     "sap/ui/model/FilterOperator",
     "sap/ui/model/Sorter",
     "sap/ui/core/Configuration",
+    "sap/ui/core/Fragment",
+    "sap/m/MessageToast",
+    "sap/m/MessageBox",
   ],
-  function (Controller, Filter, FilterOperator, Sorter, Configuration) {
+  function (
+    Controller,
+    Filter,
+    FilterOperator,
+    Sorter,
+    Configuration,
+    Fragment,
+    MessageToast,
+    MessageBox,
+  ) {
     "use strict";
 
     return Controller.extend(
       "com.example.meinetodolistenapp.controller.MainView",
       {
-        onInit: function () {},
+        onInit: function () {
+          const oFormModel = new sap.ui.model.json.JSONModel({
+            TITLE: "",
+            DESCRIPTION: "",
+            DUE_DATE: null,
+            STATUS: "",
+          });
+          this.getView().setModel(oFormModel, "createTodoForm");
+        },
 
         /**
          * ===================================================
@@ -85,7 +105,11 @@ sap.ui.define(
           const oSorter = new Sorter(sortBy, !isAscending);
           //console.log("sort by: " + sortBy);
           let oTable = this.byId("todoTable");
-          oTable.getBinding("items").sort(oSorter);
+          // 2. Thêm kiểm tra an toàn để tránh lỗi Crash khi bảng chưa có dữ liệu
+          let oBinding = oTable ? oTable.getBinding("items") : null;
+          if (oBinding) {
+            oBinding.sort(oSorter);
+          }
         },
         onLanguageChange: function (oEvent) {
           const selectedLanguage = oEvent.getSource().getSelectedKey();
@@ -97,7 +121,56 @@ sap.ui.define(
             Configuration.setLanguage(selectedLanguage);
           }
         },
+        onOpenCreateDialog: function (oEvent) {
+          console.log("Add button Clicked");
+          if (!this.oCreateTodoDialog) {
+            this.loadFragment({
+              name: "com.example.meinetodolistenapp.view.fragments.toolbar.CreateToDoDialog",
+            }).then((res) => {
+              this.oCreateTodoDialog = res;
+              this.getView().addDependent(this.oCreateTodoDialog);
+              this.oCreateTodoDialog.open();
+            });
+          } else {
+            this.oCreateTodoDialog.open();
+          }
+        },
+        onCloseCreateDialog: function () {
+          if (this.oCreateTodoDialog) {
+            this.oCreateTodoDialog.close();
+          }
+        },
+        onSaveTask: function (oEvent) {
+          // hole die leere Form;
+          const oFormModel = this.getView().getModel("createTodoForm");
 
+          // Hele alle Daten aus Form-Eingabe
+          const oNewTodoData = oFormModel.getData();
+
+          if (!oNewTodoData.TITLE || oNewTodoData.TITLE.trim() === "") {
+            MessageBox.error("Title ist erforderlich");
+            return;
+          }
+          // hole die Default Odata Model
+          const oODataModel = this.getView().getModel();
+          oODataModel.create("/Todo", oNewTodoData, {
+            success: (oData, oResponse) => {
+              MessageToast.show("Todo gespeichert");
+              this.onCloseCreateDialog();
+              oODataModel.refresh();
+              oFormModel.setData({
+                TITLE: "",
+                DESCRIPTION: "",
+                DUE_DATE: null,
+                STATUS: "",
+              });
+            },
+            error: (oError) => {
+              console.error("Error Create Todo", oError);
+              MessageBox.error("System Error: " + oError.message);
+            },
+          });
+        },
         /**
          * ===================================================
          * HILFSFUNKTIONEN

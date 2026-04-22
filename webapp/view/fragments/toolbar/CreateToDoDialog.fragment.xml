@@ -1,0 +1,77 @@
+<core:FragmentDefinition
+    xmlns:form="sap.ui.layout.form"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <!--  -->
+    <Dialog
+        id="createTodoDialog"
+        title="Create Task"
+    >
+        <beginButton>
+            <Button
+                text="Save"
+                type="Emphasized"
+                press=".onSaveTask"
+            />
+        </beginButton>
+        <endButton>
+            <Button
+                text="Close"
+                type="Reject"
+                press=".onCloseCreateDialog "
+            />
+        </endButton>
+
+        <form:SimpleForm
+            id="createTodoForm"
+            editable="true"
+            layout="ResponsiveGridLayout"
+            singleContainerFullSize="true"
+        >
+            <Label text="{path:'i18n>column.title'}" />
+            <Input
+                id="inputTitle"
+                valueStateText="Title is required"
+                value="{createTodoForm>/TITLE}"
+                required="true"
+            />
+            <Label text="{path:'i18n>column.description'}" />
+            <Input
+                id="inputDescription"
+                value="{createTodoForm>/DESCRIPTION}"
+            />
+            <Label text="{path:'i18n>column.dueDate'}" />
+            <DatePicker
+                id="inputDueDate"
+                value="{
+                    path: 'createTodoForm>/DUE_DATE',
+                    type: 'sap.ui.model.type.Date',
+                    formatOptions: {
+                         pattern: 'yyyy-MM-dd'
+                                    }              
+                }"
+            />
+            <Label text="{path:'i18n>column.status'}" />
+            <Select
+                id="inputStatus"
+                selectedKey="{createTodoForm>/STATUS}"
+                items="{
+                        path: 'status>/StatusList',
+                        filters: [{
+                        path: 'key',
+                        operator: 'NE' ,
+                        value1: 'All'
+                        }]}"
+            >
+                <items>
+                    <core:Item
+                        key="{status>key}"
+                        text="{path:'status>textKey',
+                            formatter:'.formatStatusText' }"
+                    />
+                </items>
+            </Select>
+        </form:SimpleForm>
+    </Dialog>
+</core:FragmentDefinition>

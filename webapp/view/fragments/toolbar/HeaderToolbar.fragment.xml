@@ -51,6 +51,7 @@
             icon="sap-icon://add-activity"
             text="{i18n>addTaskBtnText}"
             type="Emphasized"
+            press=".onOpenCreateDialog"
         />
         <!-- delete selected button -->
         <Button
