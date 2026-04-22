@@ -8,6 +8,27 @@
         id="mainview--container"
         title="{i18n>title}"
     >
+        <headerContent>
+            <Select
+                id="languageSelect"
+                forceSelection="true"
+                change=".onLanguageChange"
+                selectedKey="en"
+            >
+                <core:Item
+                    key="de"
+                    text="Deutsch"
+                />
+                <core:Item
+                    key="en"
+                    text="English"
+                />
+                <core:Item
+                    key="vi"
+                    text="Tiếng Việt"
+                />
+            </Select>
+        </headerContent>
         <content>
             <!-- Table of Todo Tasks -->
             <Table

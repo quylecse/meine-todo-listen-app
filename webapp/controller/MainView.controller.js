@@ -4,8 +4,9 @@ sap.ui.define(
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "sap/ui/model/Sorter",
+    "sap/ui/core/Configuration",
   ],
-  function (Controller, Filter, FilterOperator, Sorter) {
+  function (Controller, Filter, FilterOperator, Sorter, Configuration) {
     "use strict";
 
     return Controller.extend(
@@ -85,6 +86,16 @@ sap.ui.define(
           //console.log("sort by: " + sortBy);
           let oTable = this.byId("todoTable");
           oTable.getBinding("items").sort(oSorter);
+        },
+        onLanguageChange: function (oEvent) {
+          const selectedLanguage = oEvent.getSource().getSelectedKey();
+
+          //console.log("Key: ", selectedLanguage);
+
+          // Sprache einstellen
+          if (selectedLanguage) {
+            Configuration.setLanguage(selectedLanguage);
+          }
         },
 
         /**
