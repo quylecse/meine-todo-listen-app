@@ -25,6 +25,7 @@ sap.ui.define(
       "com.example.meinetodolistenapp.controller.MainView",
       {
         onInit: function () {
+          //Databucket
           const oFormModel = new sap.ui.model.json.JSONModel({
             TITLE: "",
             DESCRIPTION: "",
@@ -32,6 +33,9 @@ sap.ui.define(
             STATUS: "",
           });
           this.getView().setModel(oFormModel, "createTodoForm");
+
+          // path für Edit
+          this._sEditPath = null;
         },
 
         /**
@@ -39,6 +43,9 @@ sap.ui.define(
          * ACTIONS CONTROLLER
          * - Todo suchen
          * - Status ausfiltern
+         * - Sprache ändern
+         * - Neue Todo hinzufügen
+         * - Todo bearbeiten
          * ===================================================
          */
         onSearch: function (oEvent) {
@@ -122,54 +129,133 @@ sap.ui.define(
           }
         },
         onOpenCreateDialog: function (oEvent) {
-          console.log("Add button Clicked");
-          if (!this.oCreateTodoDialog) {
-            this.loadFragment({
-              name: "com.example.meinetodolistenapp.view.fragments.toolbar.CreateToDoDialog",
-            }).then((res) => {
-              this.oCreateTodoDialog = res;
-              this.getView().addDependent(this.oCreateTodoDialog);
-              this.oCreateTodoDialog.open();
-            });
-          } else {
-            this.oCreateTodoDialog.open();
-          }
-        },
-        onCloseCreateDialog: function () {
-          if (this.oCreateTodoDialog) {
-            this.oCreateTodoDialog.close();
-          }
-        },
-        onSaveTask: function (oEvent) {
-          // hole die leere Form;
-          const oFormModel = this.getView().getModel("createTodoForm");
+          // der Title des Dialogs setzen
 
-          // Hele alle Daten aus Form-Eingabe
-          const oNewTodoData = oFormModel.getData();
+          const oResourceBundle = this.getView()
+            .getModel("i18n")
+            .getResourceBundle();
+          const sDialogTitle = this._sEditPath
+            ? oResourceBundle.getText("dialog.onEditTitle")
+            : oResourceBundle.getText("dialog.onCreateTitle");
 
-          if (!oNewTodoData.TITLE || oNewTodoData.TITLE.trim() === "") {
-            MessageBox.error("Title ist erforderlich");
-            return;
-          }
-          // hole die Default Odata Model
-          const oODataModel = this.getView().getModel();
-          oODataModel.create("/Todo", oNewTodoData, {
-            success: (oData, oResponse) => {
-              MessageToast.show("Todo gespeichert");
-              this.onCloseCreateDialog();
-              oODataModel.refresh();
+          //
+          if (oEvent) {
+            // wenn Dialog ohne Event (das heißt durch onEdit) geöffnet wird, führt zur Erstellung dann reset input Form
+            this._sEditPath = null;
+            const oFormModel = this.getView().getModel("createTodoForm");
+            if (oFormModel) {
               oFormModel.setData({
                 TITLE: "",
                 DESCRIPTION: "",
                 DUE_DATE: null,
                 STATUS: "",
               });
-            },
-            error: (oError) => {
-              console.error("Error Create Todo", oError);
-              MessageBox.error("System Error: " + oError.message);
-            },
+            }
+          }
+
+          if (!this.oCreateTodoDialog) {
+            this.loadFragment({
+              name: "com.example.meinetodolistenapp.view.fragments.toolbar.CreateToDoDialog",
+            }).then((res) => {
+              this.oCreateTodoDialog = res;
+              this.getView().addDependent(this.oCreateTodoDialog);
+              this.oCreateTodoDialog.setTitle(sDialogTitle);
+              this.oCreateTodoDialog.open();
+            });
+          } else {
+            this.oCreateTodoDialog.setTitle(sDialogTitle);
+            this.oCreateTodoDialog.open();
+          }
+        },
+        onCloseCreateDialog: function () {
+          if (this.oCreateTodoDialog) {
+            this._sEditPath = null;
+            this.oCreateTodoDialog.close();
+          }
+        },
+        //Save Task für Create und Delete
+        onSaveTask: function (oEvent) {
+          const oFormModel = this.getView().getModel("createTodoForm"); // hole die leere Form;
+          const oRawData = oFormModel.getData(); // Hele alle Daten aus Form-Eingabe
+          const oODataModel = this.getView().getModel(); // hole die Default  Odata Service Model
+          oODataModel.resetChanges();
+
+          const payload = {
+            TITLE: oRawData.TITLE,
+            DESCRIPTION: oRawData.DESCRIPTION,
+            DUE_DATE: oRawData.DUE_DATE,
+            STATUS: oRawData.STATUS,
+          };
+          // Benutzer Input check
+          if (!payload.TITLE || payload.TITLE.trim() === "") {
+            MessageBox.error("Title ist erforderlich");
+            return;
+          }
+
+          //Fallunterscheidung zw. Create und Edit
+          if (this._sEditPath) {
+            oODataModel.update(this._sEditPath, payload, {
+              success: (oDdata, oResponse) => {
+                MessageToast.show("Todo aktualisiert");
+                this.onCloseCreateDialog();
+                oODataModel.refresh();
+                oFormModel.setData({
+                  TITLE: "",
+                  DESCRIPTION: "",
+                  DUE_DATE: null,
+                  STATUS: "",
+                });
+                this._sEditPath = null;
+              },
+              error: (oError) => {
+                console.log(oError);
+                MessageBox.error("System Error: " + oError.message);
+              },
+            });
+            //path nicht null ? auf Edit : auf Create
+          } else {
+            oODataModel.create("/Todo", payload, {
+              success: (oData, oResponse) => {
+                MessageToast.show("Todo gespeichert");
+                this.onCloseCreateDialog();
+                oODataModel.refresh();
+                oFormModel.setData({
+                  TITLE: "",
+                  DESCRIPTION: "",
+                  DUE_DATE: null,
+                  STATUS: "",
+                });
+                this._sEditPath = null;
+                console.log("editpath after create: " + this._sEditPath);
+              },
+              error: (oError) => {
+                console.error("Error Create Todo", oError);
+                MessageBox.error("System Error: " + oError.message);
+              },
+            });
+          }
+        },
+        onEditTask: function (oEvent) {
+          // Context greifen
+          const oContext = oEvent.getSource().getBindingContext(); // das ausgewählte Todo
+          if (!oContext) return;
+          console.log("Edit todo: " + oContext);
+          // Daten der Zeile holen
+          const oRawDataOnClicked = oContext.getObject();
+          //console.log("Data to be edited: ", oRawDataOnClicked);
+
+          const oFormModel = this.getView().getModel("createTodoForm");
+          oFormModel.setData({
+            TITLE: oRawDataOnClicked.TITLE,
+            DESCRIPTION: oRawDataOnClicked.DESCRIPTION,
+            DUE_DATE: oRawDataOnClicked.DUE_DATE,
+            STATUS: oRawDataOnClicked.STATUS,
           });
+
+          // Edit Path setzen
+          this._sEditPath = oContext.getPath();
+          //console.log("EditPath nach Save: ", this._sEditPath);
+          this.onOpenCreateDialog();
         },
         /**
          * ===================================================

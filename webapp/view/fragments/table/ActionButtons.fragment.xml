@@ -6,6 +6,7 @@
         <Button
             icon="sap-icon://edit"
             type="Transparent"
+            press=".onEditTask"
         />
         <Button
             icon="sap-icon://delete"
