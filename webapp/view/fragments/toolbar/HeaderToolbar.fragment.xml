@@ -58,7 +58,7 @@
             icon="sap-icon://delete"
             text="{i18n>deleteSelectedBtnText}"
             type="Reject"
-            press=".onDeleteTask"
+            press=".onOpenMultipleDeleteDialog"
         />
     </OverflowToolbar>
 </core:FragmentDefinition>

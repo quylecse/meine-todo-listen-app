@@ -37,6 +37,7 @@ sap.ui.define(
           // path für Edit
           this._sEditPath = null;
           this._oDeleteDialog = null;
+          this._aDeletePaths = null;
         },
 
         /**
@@ -261,13 +262,8 @@ sap.ui.define(
           //console.log("EditPath nach Save: ", this._sEditPath);
           this.onOpenCreateDialog();
         },
-        onOpenDeleteDialog: function (oEvent) {
-          //delete-Dialog auf View zuweisen
+        _showDeleteDialog: function () {
           const oView = this.getView();
-          const oDeleteItem = oEvent.getSource().getBindingContext();
-          const sDeletePath = oDeleteItem.getPath();
-          this._sDeletePath = sDeletePath;
-
           if (!this._oDeleteDialog) {
             this._oDeleteDialog = Fragment.load({
               id: oView.getId(),
@@ -280,15 +276,59 @@ sap.ui.define(
           }
           this._oDeleteDialog.then(function (oDialog) {
             oDialog.open();
+            return oDialog;
           });
         },
-        onCancelDelete: function () {
-          this._oDeleteDialog.then(
+        onOpenDeleteDialog: function (oEvent) {
+          //delete-Dialog auf View zuweisen
+
+          const oDeleteItem = oEvent.getSource().getBindingContext();
+          const sDeletePath = oDeleteItem.getPath();
+          this._sDeletePath = sDeletePath;
+          this._showMultipleDeleteDialog();
+        },
+        _showMultipleDeleteDialog: function () {
+          const oView = this.getView();
+          const oResourceBundle = oView.getModel("i18n").getResourceBundle();
+          if (!this._oDeleteMultipleDialog) {
+            this._oDeleteMultipleDialog = Fragment.load({
+              id: oView.getId(),
+              name: "com.example.meinetodolistenapp.view.fragments.table.DeleteMultipleTodoDialog",
+              controller: this,
+            }).then(function (oDialog) {
+              oView.addDependent(oDialog);
+              return oDialog;
+            });
+          }
+          this._oDeleteMultipleDialog.then(
             function (oDialog) {
-              oDialog.close();
-              this._sDeletePath = null;
+              const iCount = this._aDeletePaths ? this._aDeletePaths.length : 0;
+              const oText = Fragment.byId(oView.getId(), "multipleDeleteText");
+              if (oText) {
+                const message = oResourceBundle.getText("deleteMultipleTodos", [
+                  iCount,
+                ]);
+                oText.setText(message);
+              }
+
+              oDialog.open();
             }.bind(this),
           );
+          return this._oDeleteMultipleDialog;
+        },
+        onCancelDelete: function () {
+          if (this._oDeleteDialog) {
+            this._oDeleteDialog.then(function (oDialog) {
+              oDialog.close();
+            });
+          }
+          if (this._oDeleteMultipleDialog) {
+            this._oDeleteMultipleDialog.then(function (oDialog) {
+              oDialog.close();
+            });
+          }
+          this._sDeletePath = null;
+          this._aDeletePaths = null;
         },
         onConfirmDelete: function () {
           const oResourceBundle = this.getView()
@@ -315,7 +355,77 @@ sap.ui.define(
             },
           });
         },
-        
+        onOpenMultipleDeleteDialog: function (oEvent) {
+          const oTable = this.byId("todoTable");
+          const aSelectedItems = oTable.getSelectedContexts();
+
+          const oResourceBundle = this.getView()
+            .getModel("i18n")
+            .getResourceBundle();
+
+          if (aSelectedItems.length === 0) {
+            MessageToast.show(
+              oResourceBundle.getText(
+                "deleteMultipleTodos.emptySelectedWarning",
+              ),
+            );
+            return;
+          }
+          this._aDeletePaths = aSelectedItems.map((item) => item.getPath());
+          this._sDeletePath = null;
+          this._showMultipleDeleteDialog();
+        },
+        onConfirmMultipleDelete: function () {
+          const oResourceBundle = this.getView()
+            .getModel("i18n")
+            .getResourceBundle();
+          const oModel = this.getView().getModel();
+          const aPaths = this._aDeletePaths;
+          const iTodoCount = aPaths ? aPaths.length : 0;
+
+          if (!aPaths || aPaths.length == 0) {
+            MessageToast.show(
+              oResourceBundle.getText(
+                "deleteMultipleTodos.emptySelectedWarning",
+              ),
+            );
+            return;
+          }
+
+          const sGroupId = "bulkDeleteGroup";
+          const aDeferredGroups = oModel.getDeferredGroups();
+          if (!aDeferredGroups.includes(sGroupId)) {
+            oModel.setDeferredGroups(aDeferredGroups.concat([sGroupId]));
+          }
+
+          aPaths.forEach((aPath) => {
+            oModel.remove(aPath, {
+              groupId: sGroupId,
+            });
+          });
+
+          oModel.submitChanges({
+            groupId: sGroupId,
+            success: function () {
+              MessageToast.show(
+                oResourceBundle.getText("deleteMultipleTodos.successText", [
+                  iTodoCount,
+                ]),
+              );
+              this._oDeleteMultipleDialog.then(function (oDialog) {
+                oDialog.close();
+              });
+              this.byId("todoTable").removeSelections();
+            }.bind(this),
+            error: function (error) {
+              console.log(error);
+              MessageToast.show(
+                oResourceBundle.getText("deleteTodoConfirm.errorText"),
+              );
+            },
+          });
+        },
+
         /**
          * ===================================================
          * HILFSFUNKTIONEN

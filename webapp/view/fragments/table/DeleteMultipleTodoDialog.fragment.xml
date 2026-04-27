@@ -4,19 +4,20 @@
 >
     <Dialog
         type="Message"
-        title="{i18n>deleteTodoButton.title}"
+        title="{i18n>deleteMultipleTodoButton.Title}"
     >
         <content>
             <Text
+                id="multipleDeleteText"
                 wrapping="true"
-                text="{i18n>deleteTodoButton.content}"
+                text="{i18n>deleteMultipleTodoButton.content}"
             />
         </content>
         <beginButton>
             <Button
                 type="Emphasized"
                 text="{i18n>beginButton.deleteConfirmText}"
-                press=".onConfirmDelete"
+                press=".onConfirmMultipleDelete"
             />
         </beginButton>
         <endButton>
