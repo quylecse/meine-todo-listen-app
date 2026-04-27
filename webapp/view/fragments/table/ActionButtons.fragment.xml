@@ -11,6 +11,7 @@
         <Button
             icon="sap-icon://delete"
             type="Transparent"
+            press=".onOpenDeleteDialog"
         />
     </HBox>
 </core:FragmentDefinition>

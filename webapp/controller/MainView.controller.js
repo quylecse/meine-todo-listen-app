@@ -36,6 +36,7 @@ sap.ui.define(
 
           // path für Edit
           this._sEditPath = null;
+          this._oDeleteDialog = null;
         },
 
         /**
@@ -129,20 +130,11 @@ sap.ui.define(
           }
         },
         onOpenCreateDialog: function (oEvent) {
-          // der Title des Dialogs setzen
-
-          const oResourceBundle = this.getView()
-            .getModel("i18n")
-            .getResourceBundle();
-          const sDialogTitle = this._sEditPath
-            ? oResourceBundle.getText("dialog.onEditTitle")
-            : oResourceBundle.getText("dialog.onCreateTitle");
-
-          //
+          const oView = this.getView();
           if (oEvent) {
             // wenn Dialog ohne Event (das heißt durch onEdit) geöffnet wird, führt zur Erstellung dann reset input Form
             this._sEditPath = null;
-            const oFormModel = this.getView().getModel("createTodoForm");
+            const oFormModel = oView.getModel("createTodoForm");
             if (oFormModel) {
               oFormModel.setData({
                 TITLE: "",
@@ -152,19 +144,31 @@ sap.ui.define(
               });
             }
           }
+          // der Title des Dialogs setzen
+          const oResourceBundle = this.getView()
+            .getModel("i18n")
+            .getResourceBundle();
+          const sDialogTitle = this._sEditPath
+            ? oResourceBundle.getText("dialog.onEditTitle")
+            : oResourceBundle.getText("dialog.onCreateTitle");
+
+          const handleOpenDialog = function (oDialog) {
+            oDialog.setTitle(sDialogTitle);
+            oDialog.open();
+          };
 
           if (!this.oCreateTodoDialog) {
             this.loadFragment({
               name: "com.example.meinetodolistenapp.view.fragments.toolbar.CreateToDoDialog",
-            }).then((res) => {
-              this.oCreateTodoDialog = res;
-              this.getView().addDependent(this.oCreateTodoDialog);
-              this.oCreateTodoDialog.setTitle(sDialogTitle);
-              this.oCreateTodoDialog.open();
-            });
+            }).then(
+              function (oLoadedFragment) {
+                this.oCreateTodoDialog = oLoadedFragment;
+                oView.addDependent(this.oCreateTodoDialog);
+                handleOpenDialog(this.oCreateTodoDialog);
+              }.bind(this),
+            );
           } else {
-            this.oCreateTodoDialog.setTitle(sDialogTitle);
-            this.oCreateTodoDialog.open();
+            handleOpenDialog(this.oCreateTodoDialog);
           }
         },
         onCloseCreateDialog: function () {
@@ -175,7 +179,7 @@ sap.ui.define(
         },
         //Save Task für Create und Delete
         onSaveTask: function (oEvent) {
-          const oFormModel = this.getView().getModel("createTodoForm"); // hole die leere Form;
+          const oFormModel = this.getView().getModel("createTodoForm"); // hole die Input Form;
           const oRawData = oFormModel.getData(); // Hele alle Daten aus Form-Eingabe
           const oODataModel = this.getView().getModel(); // hole die Default  Odata Service Model
           oODataModel.resetChanges();
@@ -198,7 +202,6 @@ sap.ui.define(
               success: (oDdata, oResponse) => {
                 MessageToast.show("Todo aktualisiert");
                 this.onCloseCreateDialog();
-                oODataModel.refresh();
                 oFormModel.setData({
                   TITLE: "",
                   DESCRIPTION: "",
@@ -236,6 +239,7 @@ sap.ui.define(
           }
         },
         onEditTask: function (oEvent) {
+          const oView = this.getView();
           // Context greifen
           const oContext = oEvent.getSource().getBindingContext(); // das ausgewählte Todo
           if (!oContext) return;
@@ -244,7 +248,7 @@ sap.ui.define(
           const oRawDataOnClicked = oContext.getObject();
           //console.log("Data to be edited: ", oRawDataOnClicked);
 
-          const oFormModel = this.getView().getModel("createTodoForm");
+          const oFormModel = oView.getModel("createTodoForm");
           oFormModel.setData({
             TITLE: oRawDataOnClicked.TITLE,
             DESCRIPTION: oRawDataOnClicked.DESCRIPTION,
@@ -257,6 +261,61 @@ sap.ui.define(
           //console.log("EditPath nach Save: ", this._sEditPath);
           this.onOpenCreateDialog();
         },
+        onOpenDeleteDialog: function (oEvent) {
+          //delete-Dialog auf View zuweisen
+          const oView = this.getView();
+          const oDeleteItem = oEvent.getSource().getBindingContext();
+          const sDeletePath = oDeleteItem.getPath();
+          this._sDeletePath = sDeletePath;
+
+          if (!this._oDeleteDialog) {
+            this._oDeleteDialog = Fragment.load({
+              id: oView.getId(),
+              name: "com.example.meinetodolistenapp.view.fragments.table.DeleteTodoDialog",
+              controller: this,
+            }).then(function (oDialog) {
+              oView.addDependent(oDialog);
+              return oDialog;
+            });
+          }
+          this._oDeleteDialog.then(function (oDialog) {
+            oDialog.open();
+          });
+        },
+        onCancelDelete: function () {
+          this._oDeleteDialog.then(
+            function (oDialog) {
+              oDialog.close();
+              this._sDeletePath = null;
+            }.bind(this),
+          );
+        },
+        onConfirmDelete: function () {
+          const oResourceBundle = this.getView()
+            .getModel("i18n")
+            .getResourceBundle();
+          const sDeletePath = this._sDeletePath;
+          console.log("Item deleted: ", sDeletePath);
+          if (!sDeletePath) return;
+
+          const oModel = this.getView().getModel();
+          oModel.remove(sDeletePath, {
+            success: () => {
+              MessageToast.show(
+                oResourceBundle.getText("deleteTodoConfirm.successText"),
+              );
+              this.onCancelDelete();
+            },
+            error: (error) => {
+              console.log(error);
+              MessageToast.show(
+                oResourceBundle.getText("deleteTodoConfirm.errorText"),
+              );
+              this.onCancelDelete();
+            },
+          });
+        },
+        
         /**
          * ===================================================
          * HILFSFUNKTIONEN

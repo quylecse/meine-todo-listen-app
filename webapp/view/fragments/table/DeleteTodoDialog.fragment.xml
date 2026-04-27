@@ -1,0 +1,30 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        type="Message"
+        title="{i18n>deleteTodoButton.title}"
+        afterClose=".onCloseDialog"
+    >
+        <content>
+            <Text
+                wrapping="true"
+                text="{i18n>deleteTodoButton.content}"
+            />
+        </content>
+        <beginButton>
+            <Button
+                type="Emphasized"
+                text="{i18n>beginButton.deleteConfirmText}"
+                press=".onConfirmDelete"
+            />
+        </beginButton>
+        <endButton>
+            <Button
+                text="{i18n>endButton.closeConfirmText}"
+                press=".onCancelDelete"
+            />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>
