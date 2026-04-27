@@ -183,6 +183,9 @@ sap.ui.define(
           const oFormModel = this.getView().getModel("createTodoForm"); // hole die Input Form;
           const oRawData = oFormModel.getData(); // Hele alle Daten aus Form-Eingabe
           const oODataModel = this.getView().getModel(); // hole die Default  Odata Service Model
+          const oResourceBundle = this.getView()
+            .getModel("i18n")
+            .getResourceBundle();
           oODataModel.resetChanges();
 
           const payload = {
@@ -193,7 +196,9 @@ sap.ui.define(
           };
           // Benutzer Input check
           if (!payload.TITLE || payload.TITLE.trim() === "") {
-            MessageBox.error("Title ist erforderlich");
+            MessageBox.error(
+              oResourceBundle.getText("createTodo.titleRequired"),
+            );
             return;
           }
 
@@ -201,7 +206,9 @@ sap.ui.define(
           if (this._sEditPath) {
             oODataModel.update(this._sEditPath, payload, {
               success: (oDdata, oResponse) => {
-                MessageToast.show("Todo aktualisiert");
+                MessageToast.show(
+                  oResourceBundle.getText("updateTodo.successText"),
+                );
                 this.onCloseCreateDialog();
                 oFormModel.setData({
                   TITLE: "",
@@ -212,7 +219,7 @@ sap.ui.define(
                 this._sEditPath = null;
               },
               error: (oError) => {
-                console.log(oError);
+                // console.log(oError);
                 MessageBox.error("System Error: " + oError.message);
               },
             });
@@ -220,7 +227,9 @@ sap.ui.define(
           } else {
             oODataModel.create("/Todo", payload, {
               success: (oData, oResponse) => {
-                MessageToast.show("Todo gespeichert");
+                MessageToast.show(
+                  oResourceBundle.getText("createTodo.successText"),
+                );
                 this.onCloseCreateDialog();
                 oODataModel.refresh();
                 oFormModel.setData({
@@ -230,10 +239,10 @@ sap.ui.define(
                   STATUS: "",
                 });
                 this._sEditPath = null;
-                console.log("editpath after create: " + this._sEditPath);
+                // console.log("editpath after create: " + this._sEditPath);
               },
               error: (oError) => {
-                console.error("Error Create Todo", oError);
+                // console.error("Error Create Todo", oError);
                 MessageBox.error("System Error: " + oError.message);
               },
             });
@@ -244,7 +253,7 @@ sap.ui.define(
           // Context greifen
           const oContext = oEvent.getSource().getBindingContext(); // das ausgewählte Todo
           if (!oContext) return;
-          console.log("Edit todo: " + oContext);
+          // console.log("Edit todo: " + oContext);
           // Daten der Zeile holen
           const oRawDataOnClicked = oContext.getObject();
           //console.log("Data to be edited: ", oRawDataOnClicked);
@@ -285,7 +294,7 @@ sap.ui.define(
           const oDeleteItem = oEvent.getSource().getBindingContext();
           const sDeletePath = oDeleteItem.getPath();
           this._sDeletePath = sDeletePath;
-          this._showMultipleDeleteDialog();
+          this._showDeleteDialog();
         },
         _showMultipleDeleteDialog: function () {
           const oView = this.getView();
@@ -335,7 +344,7 @@ sap.ui.define(
             .getModel("i18n")
             .getResourceBundle();
           const sDeletePath = this._sDeletePath;
-          console.log("Item deleted: ", sDeletePath);
+          // console.log("Item deleted: ", sDeletePath);
           if (!sDeletePath) return;
 
           const oModel = this.getView().getModel();
@@ -347,7 +356,7 @@ sap.ui.define(
               this.onCancelDelete();
             },
             error: (error) => {
-              console.log(error);
+              // console.log(error);
               MessageToast.show(
                 oResourceBundle.getText("deleteTodoConfirm.errorText"),
               );
@@ -418,7 +427,7 @@ sap.ui.define(
               this.byId("todoTable").removeSelections();
             }.bind(this),
             error: function (error) {
-              console.log(error);
+              // console.log(error);
               MessageToast.show(
                 oResourceBundle.getText("deleteTodoConfirm.errorText"),
               );
